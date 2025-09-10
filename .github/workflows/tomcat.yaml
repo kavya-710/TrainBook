@@ -21,8 +21,18 @@ jobs:
             java-version:  '11'
             
         #Build with  maven(update)
-        - name: Build with maven
-          run: maven clean package  
+        - name: Build with mvn
+          run: mvn clean package 
+
+
+        #Deploy
+        - name: Deploy to tomcat
+          run: |
+           - name: Deploy WAR to Tomcat
+           run: |
+           curl -v -u ${{ secrets.TOMCAT_USER }}:${{ secrets.TOMCAT_PASSWORD }} \
+           -T target/TrainBook-1.0.0-SNAPSHOT.war "http://${{ secrets.TOMCAT_HOST }}/manager/text/deploy?path=/TrainBook-1.0.0-SNAPSHOT&update=true"
+           
          
         
    
