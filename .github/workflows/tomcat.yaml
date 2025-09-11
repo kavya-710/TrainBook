@@ -17,10 +17,10 @@ jobs:
         java-version: '11'
 
     - name: Build with Maven
-      run: mvn clean install -f MyWebApp/pom.xml
+      run: mvn clean install
 
     - name: Deploy to Tomcat
       run: |
         curl -v -u ${{ secrets.TOMCAT_USER }}:${{ secrets.TOMCAT_PASSWORD }} \
-        -T MyWebApp/target/MyWebApp.war \
-        "http://${{ secrets.TOMCAT_HOST }}/manager/text/deploy?path=/MyWebApp.war&update=true"
+        -T train-ticket-reservation/target/TrainBook-1.0.0-SNAPSHOT.war \
+        "http://${{ secrets.TOMCAT_HOST }}/manager/text/deploy?path=/TrainBook-1.0.0-SNAPSHOT.war&update=true"
