@@ -1,1 +1,18 @@
+name: SonarQube Scan
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sonarqube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: SonarQube Scan
+        uses: train-ticket-reservation/sonarcloud-github-action@v1
+        with:
+          host-url: ${{ secrets.SONAR_HOST_URL }}
+          token: ${{ secrets.SONAR_TOKEN }}
 
