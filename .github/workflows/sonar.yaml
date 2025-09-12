@@ -15,4 +15,3 @@ jobs:
         with:
           host-url: ${{ secrets.SONAR_HOST_URL }}
           token: ${{ secrets.SONAR_TOKEN }}
-
