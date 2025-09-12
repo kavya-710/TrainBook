@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: SonarQube Scan
-        uses: train-ticket-reservation/sonarcloud-github-action@v1
+        uses: train-ticket-reservation/WebContent@v1
         with:
           host-url: ${{ secrets.SONAR_HOST_URL }}
           token: ${{ secrets.SONAR_TOKEN }}
