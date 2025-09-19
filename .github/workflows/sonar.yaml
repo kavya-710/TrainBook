@@ -2,13 +2,12 @@ name: SonarQube Analysis
 
 on:
   push:
-    branches: 
-       - master
- 
+    branches:
+      - master
+
 jobs:
   sonarqube:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,37 +18,30 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: validate with maven
+      - name: Validate with Maven
         run: mvn validate
 
-      - name: compile with maven
+      - name: Compile with Maven
         run: mvn compile
 
-      - name: test with maven
+      - name: Test with Maven
         run: mvn test
 
-      - name: package with maven
-        run:  mvn package 
+      - name: Package with Maven
+        run: mvn package
 
-      - name: verify WAR file
+      - name: Verify WAR file
         run: ls -lh target/
 
-      - name: sonarqube code quality
+      - name: SonarQube code quality analysis
         run: |
           mvn clean verify sonar:sonar \
             -Dsonar.projectKey=train-ticket-reservation \
             -Dsonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
             -Dsonar.login="${{ secrets.SONAR_TOKEN }}"
-      - name: Deploy the applicaton
+
+      - name: Deploy the application to Tomcat
         run: |
-           curl -v -u ${{ secrets.TOMCAT_USER }}:${{ secrets.TOMCAT_PASSWORD }} \
-                  -T target/TrainBook-1.0.0-SNAPSHOT.war \
-                  "http://${{ secrets.TOMCAT_HOST }}:8080/manager/text/deploy?path=/TrainBook&update=true"
-           
-      
-
-
-     
-         
-      
-            
+          curl -v -u "${{ secrets.TOMCAT_USER }}:${{ secrets.TOMCAT_PASSWORD }}" \
+            -T target/TrainBook-1.0.0-SNAPSHOT.war \
+            "http://${{ secrets.TOMCAT_HOST }}:8080/manager/text/deploy?path=/TrainBook&update=true"
