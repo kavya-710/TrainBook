@@ -3,8 +3,8 @@ name: SonarQube Analysis
 on:
   push:
     branches: 
-    - master
- 
+      - master
+
 jobs:
   sonarqube:
     runs-on: ubuntu-latest
@@ -19,23 +19,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: validate with maven
-        run: mvn validate
+      - name: Build with Maven
+        run: mvn clean verify
 
-      - name: compile with maven
-        run: mvn compile
-
-      - name: test with maven
-        run: mvn test
-
-      - name: package with maven
-        run:  mvn package 
-
-      - name: verify WAR file
+      - name: Verify WAR file
         run: ls -lh target/
 
-      - name: deploy war to tomcat
-        run: | 
-              curl -v -u ${{ secrets.TOMCAT_USER }}:${{ secrets.TOMCAT_PASSWORD }} \
-              -T target/TrainBook-1.0.0-SNAPSHOT.war \
-              "http://${{ secrets.TOMCAT_HOST }}:8080/manager/text/deploy?path=/TrainBook&update=true"
+      - name: Deploy WAR to Tomcat
+        run: |
+          curl -v -u "${{ secrets.TOMCAT_USER }}:${{ secrets.TOMCAT_PASSWORD }}" \
+            -T target/TrainBook-1.0.0-SNAPSHOT.war \
+            "http://${{ secrets.TOMCAT_HOST }}:8080/manager/text/deploy?path=/TrainBook&update=true"
