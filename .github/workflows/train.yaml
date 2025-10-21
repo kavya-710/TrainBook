@@ -1,3 +1,10 @@
+name: CI/CD Pipeline for TrainBook Deployment in Multiple Environments
+
+on:
+  push:
+    branches:
+      - master
+
 jobs:
   build:
     name: Build and Package WAR
