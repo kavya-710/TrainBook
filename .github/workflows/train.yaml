@@ -42,12 +42,12 @@ jobs:
         
     - name: Deploy to Pre-Prod
       run: |
-        curl -v -u ${{ secrets.TOMCAT_PRE-PROD_USER }}:${{ secrets.TOMCAT_PRE-PROD_PASSWORD }} \
+        curl -v -u ${{ secrets.TOMCAT_PREPROD_USER }}:${{ secrets.TOMCAT_PREPROD_PASSWORD }} \
         -T target/TrainBook-1.0.0-SNAPSHOT.war \
-        "http://${{ secrets.TOMCAT_PRE-PROD_HOST }}/manager/text/deploy?path=/TrainBook-1.0.0-SNAPSHOT.war&update=true"
+        "http://${{ secrets.TOMCAT_PREPROD_HOST }}/manager/text/deploy?path=/TrainBook-1.0.0-SNAPSHOT.war&update=true"
         
     - name: Deploy to Prod
       run: |
-        curl -v -u ${{ secrets.TOMCAT_PROD_USER3 }}:${{ secrets.TOMCAT_PROD_PASSWORD }} \
+        curl -v -u ${{ secrets.TOMCAT_PROD_USER }}:${{ secrets.TOMCAT_PROD_PASSWORD }} \
         -T target/TrainBook-1.0.0-SNAPSHOT.war \
         "http://${{ secrets.TOMCAT_PROD_HOST }}/manager/text/deploy?path=/TrainBook-1.0.0-SNAPSHOT.war&update=true"
