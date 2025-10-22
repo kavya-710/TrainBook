@@ -6,6 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
+  # ------------------------------
+  # 1️⃣ BUILD JOB
+  # ------------------------------
   build:
     runs-on: ubuntu-latest
     steps:
@@ -30,6 +33,9 @@ jobs:
           name: war-file
           path: ${{ env.WAR_FILE }}
 
+  # ------------------------------
+  # 2️⃣ DEPLOY TO DEV
+  # ------------------------------
   deploy-dev:
     needs: build
     runs-on: ubuntu-latest
@@ -40,16 +46,22 @@ jobs:
 
       - name: 🚀 Deploy to DEV
         env:
-          URL: ${{ secrets.TOMCAT_URL_DEV }}
+          URL: http://35.167.3.28:8080/manager/text
           USER: ${{ secrets.TOMCAT_USER_DEV }}
           PASS: ${{ secrets.TOMCAT_PASS_DEV }}
         run: |
           WAR_FILE=$(ls *.war | head -n 1)
           echo "Deploying $WAR_FILE to DEV ($URL)"
-          curl -v -u "$USER:$PASS" "$URL/list"
+          echo "Checking Tomcat connection..."
+          curl -v -u "$USER:$PASS" "$URL/list" || exit 1
+
+          echo "Deploying to Tomcat..."
           curl -v -u "$USER:$PASS" --fail --show-error -T "$WAR_FILE" \
             "$URL/deploy?path=/train-ticket-reservation&update=true"
 
+  # ------------------------------
+  # 3️⃣ DEPLOY TO TEST
+  # ------------------------------
   deploy-test:
     needs: deploy-dev
     runs-on: ubuntu-latest
@@ -60,17 +72,20 @@ jobs:
 
       - name: 🚀 Deploy to TEST
         env:
-          URL: ${{ secrets.TOMCAT_URL_TEST }}
+          URL: http://35.167.3.29:8080/manager/text
           USER: ${{ secrets.TOMCAT_USER_TEST }}
           PASS: ${{ secrets.TOMCAT_PASS_TEST }}
         run: |
           WAR_FILE=$(ls *.war | head -n 1)
           echo "Deploying $WAR_FILE to TEST ($URL)"
-          curl -v -u "$USER:$PASS" "$URL/list"
+          curl -v -u "$USER:$PASS" "$URL/list" || exit 1
           curl -v -u "$USER:$PASS" --fail --show-error -T "$WAR_FILE" \
             "$URL/deploy?path=/train-ticket-reservation&update=true"
 
-  deploy-prepod:
+  # ------------------------------
+  # 4️⃣ DEPLOY TO PREPROD
+  # ------------------------------
+  deploy-preprod:
     needs: deploy-test
     runs-on: ubuntu-latest
     steps:
@@ -80,18 +95,21 @@ jobs:
 
       - name: 🚀 Deploy to PREPROD
         env:
-          URL: ${{ secrets.TOMCAT_URL_PREPROD }}
+          URL: http://35.167.3.30:8080/manager/text
           USER: ${{ secrets.TOMCAT_USER_PREPROD }}
           PASS: ${{ secrets.TOMCAT_PASS_PREPROD }}
         run: |
           WAR_FILE=$(ls *.war | head -n 1)
           echo "Deploying $WAR_FILE to PREPROD ($URL)"
-          curl -v -u "$USER:$PASS" "$URL/list"
+          curl -v -u "$USER:$PASS" "$URL/list" || exit 1
           curl -v -u "$USER:$PASS" --fail --show-error -T "$WAR_FILE" \
             "$URL/deploy?path=/train-ticket-reservation&update=true"
 
+  # ------------------------------
+  # 5️⃣ DEPLOY TO PROD
+  # ------------------------------
   deploy-prod:
-    needs: deploy-prepod
+    needs: deploy-preprod
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4
@@ -100,16 +118,12 @@ jobs:
 
       - name: 🚀 Deploy to PROD
         env:
-          URL: ${{ secrets.TOMCAT_URL_PROD }}
+          URL: http://35.167.3.31:8080/manager/text
           USER: ${{ secrets.TOMCAT_USER_PROD }}
           PASS: ${{ secrets.TOMCAT_PASS_PROD }}
         run: |
           WAR_FILE=$(ls *.war | head -n 1)
           echo "Deploying $WAR_FILE to PROD ($URL)"
-          curl -v -u "$USER:$PASS" "$URL/list"
+          curl -v -u "$USER:$PASS" "$URL/list" || exit 1
           curl -v -u "$USER:$PASS" --fail --show-error -T "$WAR_FILE" \
             "$URL/deploy?path=/train-ticket-reservation&update=true"
-
-
-
-            
